@@ -1,15 +1,16 @@
 import { Response, Request } from "express";
 
 import prismaClient from "../../database";
+
+// TYPES
 import { ICategoryTypes } from "../../interfaces/ICategory";
 
 export default {
   async createCategory(req: Request, res: Response): Promise<Response> {
-    const { name, image }: ICategoryTypes = req.body;
+    const { name }: ICategoryTypes = req.body;
 
     const newCategory = {
       name,
-      image,
     };
 
     try {
@@ -71,7 +72,7 @@ export default {
 
       return res
         .status(200)
-        .json({ message: "Categoria deletado com sucesso !", category });
+        .json({ message: "Categoria deletada com sucesso !", category });
     } catch (err) {
       return res.status(500).json({ message: "Erro ao deletar a categoria !" });
     }

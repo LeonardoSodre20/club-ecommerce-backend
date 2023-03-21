@@ -3,6 +3,8 @@ import prismaClient from "../../database";
 import * as dotenv from "dotenv";
 import jwt, { Secret } from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
+import { sendEmail } from "../../helpers/mail.controller";
 
 dotenv.config();
 
@@ -10,6 +12,7 @@ const secret_key: Secret = process.env.SECRET_KEY as string;
 
 // TYPES
 import { ILoginTypes } from "../../interfaces/IAuth";
+import usersController from "../user/users.controller";
 
 export default {
   async login(req: Request, res: Response): Promise<Response> {
@@ -46,6 +49,90 @@ export default {
       });
     } catch (err) {
       return res.status(500).json({ message: "Erro ao se autenticar !" });
+    }
+  },
+
+  async forgotPassword(req: Request, res: Response): Promise<Response> {
+    const { email } = req.body;
+
+    try {
+      const user = await prismaClient.user.findUnique({
+        where: {
+          email,
+        },
+      });
+
+      if (user == null) {
+        return res.status(204).json({ message: "E-mail não encontrado !" });
+      }
+
+      if (user) {
+        const passwordCodeReset = crypto
+          .randomBytes(4)
+          .toString("hex")
+          .toUpperCase();
+
+        const now = new Date();
+
+        now.setHours(now.getHours() + 1);
+
+        await usersController.updateForgotPassword(user.id, {
+          password_token_reset: passwordCodeReset,
+          password_token_expiry: now,
+        });
+
+        sendEmail({
+          to: email,
+          subject: "Recuperação de senha Ecommerce",
+          message: `Olá , ${user.name} , seu código de recuperação de senha : ${passwordCodeReset}`,
+        });
+
+        return res.status(200).json({
+          message: "Token de recuperação de senha enviado com sucesso !",
+        });
+      }
+
+      return res.status(204).json({ message: "Usuário não encontrado !" });
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({ message: "Erro ao enviar o e-mail de recuperação de senha !" });
+    }
+  },
+
+  async resetPassword(req: Request, res: Response): Promise<Response> {
+    const { email, token, password } = req.body;
+
+    try {
+      const user = await prismaClient.user.findUnique({
+        where: {
+          email,
+        },
+      });
+
+      const now = new Date();
+
+      if (user?.id && user?.password_token_expiry) {
+        if (now > user.password_token_expiry)
+          return res
+            .status(400)
+            .json({ message: "Token expirado. Gere um novo" });
+
+        await usersController.updateUser(user?.id, {
+          ...user,
+          password,
+        });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Nova senha cadastrada com sucesso." });
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({ message: "Erro no encaminhamento do token !" });
     }
   },
 };

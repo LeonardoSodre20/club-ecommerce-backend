@@ -15,7 +15,6 @@ enum Role {
 model Category {
   id         String    @id @unique @default(uuid())
   name       String    @unique
-  image      String
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   products   Product[]
@@ -38,14 +37,16 @@ model Product {
 }
 
 model User {
-  id         String   @id @unique @default(uuid())
-  name       String
-  lastname   String
-  email      String   @unique
-  password   String
-  role       Role?    @default(User)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id                    String    @id @unique @default(uuid())
+  name                  String
+  lastname              String
+  email                 String    @unique
+  password              String
+  role                  Role?     @default(User)
+  password_token_reset  String?
+  password_token_expiry DateTime?
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
 
   @@map("users")
 }

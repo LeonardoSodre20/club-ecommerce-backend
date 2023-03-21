@@ -6,6 +6,7 @@ import prismaClient from "../../database/index";
 
 // TYPES
 import { IUserTypes } from "../../interfaces/IUsers";
+import { User } from "@prisma/client";
 
 export default {
   async createUser(req: Request, res: Response): Promise<Response> {
@@ -58,32 +59,32 @@ export default {
       return res.status(500).json({ message: "Erro ao listar os usuários !" });
     }
   },
-  async updateUsers(req: Request, res: Response): Promise<Response> {
-    const { id } = req.params;
-    const { name, lastname, email, password }: IUserTypes = req.body;
+  // async updateUsers(req: Request, res: Response): Promise<Response> {
+  //   const { id } = req.params;
+  //   const { name, lastname, email, password }: IUserTypes = req.body;
 
-    const updateUser = {
-      name,
-      lastname,
-      email,
-      password,
-    };
+  //   const updateUser = {
+  //     name,
+  //     lastname,
+  //     email,
+  //     password,
+  //   };
 
-    try {
-      const user = await prismaClient.user.update({
-        where: {
-          id: String(id),
-        },
-        data: updateUser,
-      });
+  //   try {
+  //     const user = await prismaClient.user.update({
+  //       where: {
+  //         id: String(id),
+  //       },
+  //       data: updateUser,
+  //     });
 
-      return res
-        .status(200)
-        .json({ message: "Usuário atualizado com sucesso !", user });
-    } catch (err) {
-      return res.status(500).json({ message: "Erro ao atualizar o usuário !" });
-    }
-  },
+  //     return res
+  //       .status(200)
+  //       .json({ message: "Usuário atualizado com sucesso !", user });
+  //   } catch (err) {
+  //     return res.status(500).json({ message: "Erro ao atualizar o usuário !" });
+  //   }
+  // },
   async deleteUsers(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
 
@@ -100,5 +101,57 @@ export default {
     } catch (err) {
       return res.status(500).json({ message: "Erro ao deletar o usuário !" });
     }
+  },
+  async updateForgotPassword(
+    id: string,
+    data: Pick<User, "password_token_reset" | "password_token_expiry">
+  ): Promise<User | null> {
+    const user = await prismaClient.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    await prismaClient.user.update({
+      where: {
+        id,
+      },
+      data: data,
+    });
+
+    return user;
+  },
+
+  async updateUser(id: string, data: User): Promise<User | null> {
+    const user = await prismaClient.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (data.password) {
+      const saltRounds = 10;
+      const salt = bcrypt.genSaltSync(saltRounds);
+      const hashedPassword = bcrypt.hashSync(data.password, salt);
+
+      await prismaClient.user.update({
+        where: { id },
+        data: {
+          ...data,
+          password: hashedPassword,
+        },
+      });
+
+      return user;
+    }
+
+    await prismaClient.user.update({
+      where: { id },
+      data: {
+        ...data,
+      },
+    });
+
+    return user;
   },
 };

@@ -13,9 +13,9 @@ routesUser.get("/", (req: Request, res: Response) => {
   usersController.listAndCountAllUsers(req, res);
 });
 
-routesUser.put("/:id", (req: Request, res: Response) => {
-  usersController.updateUsers(req, res);
-});
+// routesUser.put("/:id", (req: Request, res: Response) => {
+//   usersController.updateUsers(req, res);
+// });
 
 routesUser.delete("/:id", (req: Request, res: Response) => {
   usersController.deleteUsers(req, res);

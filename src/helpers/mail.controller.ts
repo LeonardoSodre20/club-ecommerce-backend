@@ -1,7 +1,7 @@
 import { createTransport } from "nodemailer";
 
 // PARAMS MAIL
-import { IMailParams } from "../interfaces/IMail";
+import { IMailParams } from "@interfaces/IMail";
 
 export const sendEmail = ({ to, subject, message }: IMailParams) => {
   if (to === "" || subject === "" || message === "") {

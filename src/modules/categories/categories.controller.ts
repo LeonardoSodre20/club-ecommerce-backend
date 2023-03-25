@@ -1,9 +1,9 @@
 import { Response, Request } from "express";
 
-import prismaClient from "../../database";
+import prismaClient from "@database";
 
 // TYPES
-import { ICategoryTypes } from "../../interfaces/ICategory";
+import { ICategoryTypes } from "@interfaces/ICategory";
 
 export default {
   async createCategory(req: Request, res: Response): Promise<Response> {

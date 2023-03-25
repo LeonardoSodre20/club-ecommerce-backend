@@ -2,10 +2,10 @@ import { Response, Request } from "express";
 import bcrypt from "bcrypt";
 
 // PROVIDER
-import prismaClient from "../../database/index";
+import prismaClient from "@database";
 
 // TYPES
-import { IUserTypes } from "../../interfaces/IUsers";
+import { IUserTypes } from "@interfaces/IUsers";
 import { User } from "@prisma/client";
 
 export default {

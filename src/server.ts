@@ -3,10 +3,10 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 
 // ROUTES
-import routesProduct from "./modules/products/products.routes";
-import routesUser from "./modules/user/users.routes";
-import routesAuth from "./modules/auth/auth.routes";
-import routesCategories from "./modules/categories/categories.routes";
+import routesProduct from "@modules/products/products.routes";
+import routesUser from "@modules/user/users.routes";
+import routesAuth from "@modules/auth/auth.routes";
+import routesCategories from "@modules/categories/categories.routes";
 
 dotenv.config();
 const port = process.env.PORT;

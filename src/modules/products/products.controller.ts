@@ -1,8 +1,8 @@
-import prismaClient from "../../database";
+import prismaClient from "@database";
 
 // TYPES
 import { Response, Request } from "express";
-import { IProductsTypes } from "../../interfaces/IProducts";
+import { IProductsTypes } from "@interfaces/IProducts";
 
 export default {
   async createProduct(req: Request, res: Response): Promise<Response> {

@@ -1,18 +1,21 @@
 import { Request, Response } from "express";
-import prismaClient from "../../database";
-import * as dotenv from "dotenv";
 import jwt, { Secret } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import { sendEmail } from "../../helpers/mail.controller";
-
+import * as dotenv from "dotenv";
 dotenv.config();
+
+// PROVIDDER
+import prismaClient from "@database";
+
+// CONFIG MAIL
+import { sendEmail } from "@helpers/mail.controller";
 
 const secret_key: Secret = process.env.SECRET_KEY as string;
 
 // TYPES
-import { ILoginTypes } from "../../interfaces/IAuth";
-import usersController from "../user/users.controller";
+import { ILoginTypes } from "@interfaces/IAuth";
+import usersController from "@modules/user/users.controller";
 
 export default {
   async login(req: Request, res: Response): Promise<Response> {

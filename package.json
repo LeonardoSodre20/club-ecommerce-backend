@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node-dev -r --respawn src/server.ts"
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn src/server.ts"
   },
   "dependencies": {
     "@prisma/client": "^4.11.0",

@@ -42,7 +42,7 @@ export default {
 
     try {
       const token = jwt.sign({ id: checkUserExist.id }, secret_key, {
-        expiresIn: "2 days",
+        expiresIn: "1 days",
       });
 
       return res.status(200).json({
@@ -65,7 +65,7 @@ export default {
         },
       });
 
-      if (user == null) {
+      if (user === null) {
         return res.status(204).json({ message: "E-mail não encontrado !" });
       }
 
@@ -91,7 +91,7 @@ export default {
         });
 
         return res.status(200).json({
-          message: "Token de recuperação de senha enviado com sucesso !",
+          message: "E-mail de recuperação de senha enviado com sucesso !",
         });
       }
 
@@ -104,8 +104,8 @@ export default {
     }
   },
 
-  async resetPassword(req: Request, res: Response): Promise<Response> {
-    const { email, token, password } = req.body;
+  async validateToken(req: Request, res: Response): Promise<Response> {
+    const { email, token } = req.body;
 
     try {
       const user = await prismaClient.user.findUnique({
@@ -114,14 +114,39 @@ export default {
         },
       });
 
+      if (token != user?.password_token_reset) {
+        return res.status(400).json({ message: "Token Inválido !" });
+      }
+
       const now = new Date();
 
-      if (user?.id && user?.password_token_expiry) {
-        if (now > user.password_token_expiry)
+      if (user?.password_token_expiry) {
+        if (now > user?.password_token_expiry) {
           return res
             .status(400)
-            .json({ message: "Token expirado. Gere um novo" });
+            .json({ message: "Token Expirado . Tente gerar outro !" });
+        }
+      }
 
+      return res.status(200).json({ message: "Token enviado com sucesso !" });
+    } catch (err) {
+      return res.status(500).json({
+        message: "Erro ao encaminhar o token de recuperação de senha !",
+      });
+    }
+  },
+
+  async resetPassword(req: Request, res: Response): Promise<Response> {
+    const { email, password } = req.body;
+
+    try {
+      const user = await prismaClient.user.findUnique({
+        where: {
+          email,
+        },
+      });
+
+      if (user?.id) {
         await usersController.updateUser(user?.id, {
           ...user,
           password,

@@ -1,4 +1,6 @@
 import { Router, Request, Response } from "express";
+
+// ROUTES
 import categoriesController from "./categories.controller";
 
 const routesCategories = Router();
@@ -13,6 +15,10 @@ routesCategories.get("/", (req: Request, res: Response) => {
 
 routesCategories.get("/:id", (req: Request, res: Response) => {
   categoriesController.listCategoryByID(req, res);
+});
+
+routesCategories.get("/name/:name", (req: Request, res: Response) => {
+  categoriesController.listCategoryByName(req, res);
 });
 
 routesCategories.delete("/:id", (req: Request, res: Response) => {

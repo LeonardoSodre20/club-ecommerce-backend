@@ -8,9 +8,12 @@ const storage = multer.diskStorage({
     cb(
       null,
       process.env.ENVIRONMENT === ("DEV" as string)
-        ? `${__dirname}/uploads`
+        ? `${__dirname}/../../uploads`
         : ""
     );
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
 

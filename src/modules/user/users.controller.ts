@@ -59,32 +59,31 @@ export default {
       return res.status(500).json({ message: "Erro ao listar os usuários !" });
     }
   },
-  // async updateUsers(req: Request, res: Response): Promise<Response> {
-  //   const { id } = req.params;
-  //   const { name, lastname, email, password }: IUserTypes = req.body;
+  async updateUsers(req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+    const { name, lastname, email }: IUserTypes = req.body;
 
-  //   const updateUser = {
-  //     name,
-  //     lastname,
-  //     email,
-  //     password,
-  //   };
+    const updateUser = {
+      name,
+      lastname,
+      email,
+    };
 
-  //   try {
-  //     const user = await prismaClient.user.update({
-  //       where: {
-  //         id: String(id),
-  //       },
-  //       data: updateUser,
-  //     });
+    try {
+      const user = await prismaClient.user.update({
+        where: {
+          id: String(id),
+        },
+        data: updateUser,
+      });
 
-  //     return res
-  //       .status(200)
-  //       .json({ message: "Usuário atualizado com sucesso !", user });
-  //   } catch (err) {
-  //     return res.status(500).json({ message: "Erro ao atualizar o usuário !" });
-  //   }
-  // },
+      return res
+        .status(200)
+        .json({ message: "Usuário atualizado com sucesso !", user });
+    } catch (err) {
+      return res.status(500).json({ message: "Erro ao atualizar o usuário !" });
+    }
+  },
   async deleteUsers(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
 
@@ -154,4 +153,5 @@ export default {
 
     return user;
   },
+
 };

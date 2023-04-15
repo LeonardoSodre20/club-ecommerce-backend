@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import jwt, { Secret } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import * as dotenv from "dotenv";
@@ -7,11 +6,11 @@ dotenv.config();
 
 // PROVIDDER
 import prismaClient from "@database";
+import GenerateRefreshToken from "@provider/GenerateRefreshToken";
+import GenerateTokenProvider from "@provider/GenerateTokenProvider";
 
 // CONFIG MAIL
 import { sendEmail } from "@helpers/mail.controller";
-
-const secret_key: Secret = process.env.SECRET_KEY as string;
 
 // TYPES
 import { ILoginTypes } from "@interfaces/IAuth";
@@ -37,18 +36,18 @@ export default {
     }
 
     if (!checkPass) {
-      return res.status(422).json({ message: "Senha inválida !" });
+      return res.status(422).json({ message: "Credenciais inválidas!" });
     }
 
     try {
-      const token = jwt.sign({ id: checkUserExist.id }, secret_key, {
-        expiresIn: "1 days",
-      });
+      const token = await GenerateTokenProvider(checkUserExist?.id);
+      const refreshToken = await GenerateRefreshToken(checkUserExist?.id);
 
       return res.status(200).json({
         message: "Autenticação realizada com sucesso !",
         checkUserExist,
         token,
+        refreshToken,
       });
     } catch (err) {
       return res.status(500).json({ message: "Erro ao se autenticar !" });
@@ -160,7 +159,23 @@ export default {
       console.log(err);
       return res
         .status(500)
-        .json({ message: "Erro no encaminhamento do token !" });
+        .json({ message: "Erro ao cadastrar uma nova senha!" });
     }
+  },
+
+  async refreshTokenUser(refresh_token: string) {
+    const refreshToken = await prismaClient.refreshToken.findFirst({
+      where: {
+        id: refresh_token,
+      },
+    });
+
+    if (!refreshToken) {
+      throw new Error("Refresh Token Inválido !");
+    }
+
+    const token = GenerateTokenProvider(refreshToken.userId);
+
+    return { token };
   },
 };

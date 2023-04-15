@@ -19,8 +19,8 @@ export const sendEmail = ({ to, subject, message }: IMailParams) => {
     host: "sandbox.smtp.mailtrap.io",
     port: 2525,
     auth: {
-      user: "f7a25f041f855a",
-      pass: "0fba17fafc72b0",
+      user: "756b0d3e777001",
+      pass: "c991749a0679d1",
     },
   });
 

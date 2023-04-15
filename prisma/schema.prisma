@@ -47,6 +47,16 @@ model User {
   password_token_expiry DateTime?
   created_at            DateTime  @default(now())
   updated_at            DateTime  @updatedAt
+  refresh_token         RefreshToken[]
 
   @@map("users")
 }
+
+model RefreshToken {
+  id String @id @default(uuid())
+  expiryIn Int
+  user User @relation(fields: [userId], references: [id])
+  userId String
+
+  @@map("refresh_token")
+} 

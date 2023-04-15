@@ -3,15 +3,16 @@ import { Router, Response, Request } from "express";
 // CONTROLLER
 import productsController from "./products.controller";
 
+// MIDDLEWARES
+import { ensureAutheticated } from "@middlewares/Authorization";
+
 const routesProduct = Router();
 
-// ROTAS
-
-routesProduct.post("/", (req: Request, res: Response) => {
+routesProduct.post("/", ensureAutheticated, (req: Request, res: Response) => {
   productsController.createProduct(req, res);
 });
 
-routesProduct.get("/", (req: Request, res: Response) => {
+routesProduct.get("/", ensureAutheticated, (req: Request, res: Response) => {
   productsController.listProducts(req, res);
 });
 

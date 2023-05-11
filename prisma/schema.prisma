@@ -12,9 +12,15 @@ enum Role {
   User
 }
 
+enum Status {
+  Ativo
+  Inativo
+}
+
 model Category {
   id         String    @id @unique @default(uuid())
   name       String    @unique
+  image      String?
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   products   Product[]
@@ -31,7 +37,7 @@ model Product {
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
   categoryName String?
-  category     Category? @relation(fields: [categoryName], references: [name])
+  category     Category? @relation(fields: [categoryName], references: [name], onDelete: Cascade)
 
   @@map("products")
 }
@@ -43,6 +49,8 @@ model User {
   email                 String    @unique
   password              String
   role                  Role?     @default(User)
+  status                Status?   @default(Ativo)
+  avatar                String?
   password_token_reset  String?
   password_token_expiry DateTime?
   created_at            DateTime  @default(now())

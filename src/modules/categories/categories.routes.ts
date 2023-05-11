@@ -1,13 +1,19 @@
+import multerConfig from "@config/multer.config";
 import { Router, Request, Response } from "express";
 
 // ROUTES
 import categoriesController from "./categories.controller";
+import multer from "multer";
 
 const routesCategories = Router();
 
-routesCategories.post("/", (req: Request, res: Response) => {
-  categoriesController.createCategory(req, res);
-});
+routesCategories.post(
+  "/",
+  multer(multerConfig).single("image"),
+  (req: Request, res: Response) => {
+    categoriesController.createCategory(req, res);
+  }
+);
 
 routesCategories.get("/", (req: Request, res: Response) => {
   categoriesController.listAllCategories(req, res);

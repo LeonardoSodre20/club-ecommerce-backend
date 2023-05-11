@@ -2,25 +2,20 @@ import { Response, Request } from "express";
 
 // PROVIDER
 import prismaClient from "@database";
-
-// TYPES
-import { ICategoryTypes } from "@interfaces/ICategory";
+import dotenv from "dotenv";
+dotenv.config();
 
 export default {
   async createCategory(req: Request, res: Response): Promise<Response> {
-    const { name }: ICategoryTypes = req.body;
+    const { name } = req.body;
 
-    const newCategory = {
-      name,
-    };
-
-    const nameCategory = prismaClient.category.findUnique({
+    const categoryAlredyExist = await prismaClient.category.findUnique({
       where: {
         name,
       },
     });
 
-    if (name) {
+    if (categoryAlredyExist) {
       return res
         .status(422)
         .json({ message: "Já existe uma categoria com este nome !" });
@@ -28,7 +23,10 @@ export default {
 
     try {
       const category = await prismaClient.category.create({
-        data: newCategory,
+        data: {
+          name,
+          image: `${process.env.APP_URL}/files/${req.file?.filename}`,
+        },
       });
 
       return res

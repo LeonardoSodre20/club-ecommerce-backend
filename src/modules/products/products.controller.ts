@@ -54,7 +54,6 @@ export default {
       return res.status(500).json({ message: "Erro ao listar os produtos" });
     }
   },
-
   async listProductById(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
 
@@ -72,18 +71,15 @@ export default {
       return res.status(500).json({ message: "Erro ao listar o produto !" });
     }
   },
-
   async updateProduct(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
-    const { name, quantity, status, price, categoryName }: IProductsTypes =
-      req.body;
+    const { name, quantity, status, price }: IProductsTypes = req.body;
 
     const productUpdated = {
       name,
       quantity,
       status,
       price,
-      categoryName,
     };
 
     try {
@@ -101,7 +97,6 @@ export default {
       return res.status(500).json({ message: "Erro ao atualizar o produto !" });
     }
   },
-
   async deleteProduct(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
 

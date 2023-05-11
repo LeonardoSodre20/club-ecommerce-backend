@@ -27,17 +27,21 @@ export default {
       },
     });
 
+    if (checkUserExist?.status === "Inativo") {
+      return res.status(401).json({ message: "Usuário Desabilitado !" });
+    }
+
     const checkPass = await bcrypt.compare(
       password,
       String(checkUserExist?.password)
     );
 
     if (!checkUserExist) {
-      return res.status(422).json({ message: "Usuário não encontrado !" });
+      return res.status(422).json({ message: "Credenciais Inválidas !" });
     }
 
     if (!checkPass) {
-      return res.status(422).json({ message: "Senha inválida !" });
+      return res.status(422).json({ message: "Credenciais Inválidas !" });
     }
 
     try {

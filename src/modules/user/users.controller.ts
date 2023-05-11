@@ -1,3 +1,5 @@
+import { platform } from "process";
+import { unlink } from "fs";
 import { Response, Request } from "express";
 import bcrypt from "bcrypt";
 
@@ -7,6 +9,44 @@ import prismaClient from "@database";
 // TYPES
 import { IUserTypes } from "@interfaces/IUsers";
 import { User } from "@prisma/client";
+
+const updateImage = async (avatar: string, id: string) => {
+  let newAvatar = avatar;
+
+  if (platform === "win32") newAvatar = avatar.split("\\")[3];
+  else if (platform === "linux") newAvatar = avatar.split("/")[3];
+
+  const newData = {
+    avatar: `${process.env.APP_URL}/avatars/${newAvatar}`,
+  };
+
+  const updatedUser = await prismaClient.user.update({
+    where: { id },
+    data: newData,
+  });
+
+  return updatedUser;
+};
+
+const updateAvatarConfig = async (
+  id: string,
+  avatar: User["avatar"]
+): Promise<User | null> => {
+  const user = await prismaClient.user.findUnique({
+    where: {
+      id,
+    },
+  });
+  const oldAvatarPath = user?.avatar?.split("/avatars/")[1];
+
+  unlink(`../../tmp/avatars/${oldAvatarPath}`, (e) => {
+    if (e) console.log(e);
+  });
+
+  const updatedUser = updateImage(String(avatar), id);
+
+  return updatedUser;
+};
 
 export default {
   async createUser(req: Request, res: Response): Promise<Response> {
@@ -59,32 +99,31 @@ export default {
       return res.status(500).json({ message: "Erro ao listar os usuários !" });
     }
   },
-  // async updateUsers(req: Request, res: Response): Promise<Response> {
-  //   const { id } = req.params;
-  //   const { name, lastname, email, password }: IUserTypes = req.body;
+  async updateUsers(req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+    const { name, lastname, email }: IUserTypes = req.body;
 
-  //   const updateUser = {
-  //     name,
-  //     lastname,
-  //     email,
-  //     password,
-  //   };
+    const updateUser = {
+      name,
+      lastname,
+      email,
+    };
 
-  //   try {
-  //     const user = await prismaClient.user.update({
-  //       where: {
-  //         id: String(id),
-  //       },
-  //       data: updateUser,
-  //     });
+    try {
+      const user = await prismaClient.user.update({
+        where: {
+          id: String(id),
+        },
+        data: updateUser,
+      });
 
-  //     return res
-  //       .status(200)
-  //       .json({ message: "Usuário atualizado com sucesso !", user });
-  //   } catch (err) {
-  //     return res.status(500).json({ message: "Erro ao atualizar o usuário !" });
-  //   }
-  // },
+      return res
+        .status(200)
+        .json({ message: "Usuário atualizado com sucesso !", user });
+    } catch (err) {
+      return res.status(500).json({ message: "Erro ao atualizar o usuário !" });
+    }
+  },
   async deleteUsers(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
 
@@ -121,7 +160,6 @@ export default {
 
     return user;
   },
-
   async updateUser(id: string, data: User): Promise<User | null> {
     const user = await prismaClient.user.findUnique({
       where: {
@@ -153,5 +191,28 @@ export default {
     });
 
     return user;
+  },
+  async updateAvatar(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const avatar = req.file?.path;
+
+      let user;
+
+      user = await updateAvatarConfig(id, String(avatar));
+
+      if (user === null) return res.status(204).json();
+
+      if (avatar) user = await updateAvatarConfig(id, avatar);
+
+      return res.status(200).json({
+        message: "Avatar atualizado.",
+        user,
+      });
+    } catch (e) {
+      console.log(e);
+
+      return res.status(500).json({ message: "Erro ao atualizar avatar." });
+    }
   },
 };

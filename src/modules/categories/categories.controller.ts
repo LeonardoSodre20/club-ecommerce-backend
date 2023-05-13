@@ -8,6 +8,7 @@ dotenv.config();
 export default {
   async createCategory(req: Request, res: Response): Promise<Response> {
     const { name } = req.body;
+    const image = req?.file?.filename as string;
 
     const categoryAlredyExist = await prismaClient.category.findUnique({
       where: {
@@ -25,7 +26,7 @@ export default {
       const category = await prismaClient.category.create({
         data: {
           name,
-          image: `${process.env.APP_URL}/files/${req.file?.filename}`,
+          image: `${process.env.APP_URL}/files/${image}`,
         },
       });
 

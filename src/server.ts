@@ -1,5 +1,5 @@
 import express, { urlencoded, json } from "express";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import * as dotenv from "dotenv";
 
 // ROUTES
@@ -12,9 +12,12 @@ import path from "path";
 
 dotenv.config();
 const port = process.env.PORT;
+const corsOptions: CorsOptions = {
+  origin: "http://localhost:5173",
+};
 
 const app = express();
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
@@ -22,6 +25,10 @@ app.use(urlencoded({ extended: true }));
 app.use(
   "/files",
   express.static(path.join(__dirname, "..", "public", "images_categories"))
+);
+app.use(
+  "/filesUser",
+  express.static(path.join(__dirname, "..", "public", "avatar"))
 );
 app.use("/product", routesProduct);
 app.use("/users", routesUser);

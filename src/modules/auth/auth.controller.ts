@@ -44,6 +44,10 @@ export default {
       return res.status(422).json({ message: "Credenciais Inválidas !" });
     }
 
+    if (checkUserExist?.role !== "Admin") {
+      return res.status(422).json({ message: "Credenciais Inválidas !" });
+    }
+
     try {
       const token = jwt.sign({ id: checkUserExist.id }, secret_key, {
         expiresIn: "1 days",

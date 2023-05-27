@@ -26,7 +26,7 @@ export default {
       const category = await prismaClient.category.create({
         data: {
           name,
-          image: `${process.env.APP_URL}/files/${image}`,
+          image: `${process.env.APP_URL}:${process.env.PORT}/files/${image}`,
         },
       });
 

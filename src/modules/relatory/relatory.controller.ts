@@ -33,39 +33,39 @@ export default {
 
       // PDF CONFIGURATION
 
-      const pdfGenerate = new PdfPrinter(fonts);
+      // const pdfGenerate = new PdfPrinter(fonts);
 
-      const docDefinitions: TDocumentDefinitions = {
-        pageOrientation: "portrait",
-        pageMargins: [40, 60, 40, 60],
-        pageSize: "A4",
-        defaultStyle: {
-          font: "Courier",
-        },
+      // const docDefinitions: TDocumentDefinitions = {
+      //   pageOrientation: "portrait",
+      //   pageMargins: [40, 60, 40, 60],
+      //   pageSize: "A4",
+      //   defaultStyle: {
+      //     font: "Courier",
+      //   },
 
-        header: {
-          text: "RELATÒRIO DE DADOS MENSAL",
-          style: {
-            background: "#f10000",
-          },
-        },
+      //   header: {
+      //     text: "RELATÒRIO DE DADOS MENSAL",
+      //     style: {
+      //       background: "#f10000",
+      //     },
+      //   },
 
-        content: [
-          {
-            text: `TOTAL DE PRODUTOS : ${total}`,
-            fontSize: 15,
-            style: "header",
-            alignment: "center",
-          },
-        ],
-      };
-      const hash = Math.floor(Math.random() * 1000000);
+      //   content: [
+      //     {
+      //       text: `TOTAL DE PRODUTOS : ${total}`,
+      //       fontSize: 15,
+      //       style: "header",
+      //       alignment: "center",
+      //     },
+      //   ],
+      // };
+      // const hash = Math.floor(Math.random() * 1000000);
 
-      const pdfDoc = pdfGenerate.createPdfKitDocument(docDefinitions);
-      pdfDoc.pipe(
-        fs.createWriteStream(`public/relatorys/relatory_(${String(hash)}).pdf`)
-      );
-      pdfDoc.end();
+      // const pdfDoc = pdfGenerate.createPdfKitDocument(docDefinitions);
+      // pdfDoc.pipe(
+      //   fs.createWriteStream(`public/relatorys/relatory_(${String(hash)}).pdf`)
+      // );
+      // pdfDoc.end();
 
       return res.status(200).json({
         total,

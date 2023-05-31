@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import jwt, { Secret } from "jsonwebtoken";
+import { NextFunction, Request, Response } from "express";
+import jwt, { Secret, verify } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import * as dotenv from "dotenv";
@@ -11,11 +11,11 @@ import prismaClient from "@database";
 // CONFIG MAIL
 import { sendEmail } from "@helpers/mail.controller";
 
-const secret_key: Secret = process.env.SECRET_KEY as string;
-
 // TYPES
 import { ILoginTypes } from "@interfaces/IAuth";
 import usersController from "@modules/user/users.controller";
+
+const secret_key: Secret = process.env.SECRET_KEY as string;
 
 export default {
   async login(req: Request, res: Response): Promise<Response> {
@@ -169,6 +169,27 @@ export default {
       return res
         .status(500)
         .json({ message: "Erro no encaminhamento do token !" });
+    }
+  },
+  async verifyTokenJWT(req: Request, res: Response) {
+    const { token } = req.params;
+
+    try {
+      const authToken = verify(token, secret_key, (err) => {
+        if (err) {
+          return res
+            .status(301)
+            .json({ auth: false, message: "Sessão expirada !" });
+        } else {
+          return res
+            .status(200)
+            .json({ auth: true, message: "Sessão restaurada !" });
+        }
+      });
+
+      return authToken;
+    } catch (err: any) {
+      console.log(err);
     }
   },
 };

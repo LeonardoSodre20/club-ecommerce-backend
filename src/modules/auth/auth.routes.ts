@@ -1,4 +1,4 @@
-import { Response, Request, Router } from "express";
+import { Response, Request, Router, NextFunction } from "express";
 import authController from "./auth.controller";
 
 const routesAuth = Router();
@@ -17,6 +17,10 @@ routesAuth.post("/token", (req: Request, res: Response) => {
 
 routesAuth.post("/reset", (req: Request, res: Response) => {
   authController.resetPassword(req, res);
+});
+
+routesAuth.post("/verifyToken/:token", (req: Request, res: Response) => {
+  authController.verifyTokenJWT(req, res);
 });
 
 export default routesAuth;

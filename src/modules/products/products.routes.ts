@@ -8,7 +8,7 @@ const routesProduct = Router();
 
 // ROTAS
 
-routesProduct.post("/", (req: Request, res: Response) => {
+routesProduct.post("/", ensureAuthenticated, (req: Request, res: Response) => {
   productsController.createProduct(req, res);
 });
 

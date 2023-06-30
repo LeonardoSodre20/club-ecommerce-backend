@@ -1,28 +1,35 @@
 import { Router, Response, Request } from "express";
 
+// UPLOAD
+import multer from "multer";
+import multerConfigProduct from "./products.multer";
+
 // CONTROLLER
 import productsController from "./products.controller";
+
+// MIDDLEWARES
 import { ensureAuthenticated } from "@middlewares/Authorization";
 
 const routesProduct = Router();
 
-// ROTAS
+// ROUTES
 
-routesProduct.post("/", ensureAuthenticated, (req: Request, res: Response) => {
-  productsController.createProduct(req, res);
-});
+routesProduct.post(
+  "/",
+  // ensureAuthenticated,
+  multer(multerConfigProduct).single("image"),
+  (req: Request, res: Response) => {
+    productsController.createProduct(req, res);
+  }
+);
 
-routesProduct.get("/", ensureAuthenticated, (req: Request, res: Response) => {
+routesProduct.get("/", (req: Request, res: Response) => {
   productsController.listProducts(req, res);
 });
 
-routesProduct.get(
-  "/:id",
-  ensureAuthenticated,
-  (req: Request, res: Response) => {
-    productsController.listProductById(req, res);
-  }
-);
+routesProduct.get("/:id", (req: Request, res: Response) => {
+  productsController.listProductById(req, res);
+});
 
 routesProduct.delete(
   "/:id",

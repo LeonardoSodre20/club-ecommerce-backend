@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn src/server.ts"
   },
+  "prisma": {
+    "seed": "ts-node-dev prisma/seed.ts"
+  },
   "dependencies": {
     "@prisma/client": "^4.11.0",
     "@types/bcrypt": "^5.0.0",

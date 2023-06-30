@@ -1,31 +1,43 @@
 import prismaClient from "@database";
+import dotenv from "dotenv";
+import fs from "fs/promises";
+import path from "path";
+
+dotenv.config();
 
 // TYPES
 import { Response, Request } from "express";
 import { IProductsTypes } from "@interfaces/IProducts";
 
+const PATH_IMAGE = `${process.env.APP_URL}:${process.env.PORT}/filesProduct`;
+
 export default {
   async createProduct(req: Request, res: Response): Promise<Response> {
     const { name, quantity, status, price, categoryName }: IProductsTypes =
       req.body;
+    const image = req.file?.filename as string;
 
     const newProduct = {
       name,
       quantity,
       status,
       price,
+      image: `${PATH_IMAGE}/${image}`,
       categoryName,
     };
 
     try {
       const product = await prismaClient.product.create({
-        data: newProduct,
+        data: {
+          ...newProduct,
+        },
       });
 
       return res
         .status(200)
         .json({ message: "Produto criado com sucesso !", product });
     } catch (err) {
+      console.log(err);
       return res.status(500).json({ message: "Erro ao criar o produto" });
     }
   },
@@ -101,16 +113,29 @@ export default {
     const { id } = req.params;
 
     try {
+      const product = await prismaClient.product.findUnique({
+        where: {
+          id,
+        },
+      });
       await prismaClient.product.delete({
         where: {
           id: String(id),
         },
       });
 
+      const pathImageProduct = path.resolve(
+        __dirname,
+        `../../../public/productsImage/${product?.image.split("/")[4]}`
+      );
+
+      await fs.unlink(pathImageProduct);
+
       return res
         .status(200)
         .json({ message: "Produto deletado com sucesso !" });
     } catch (err) {
+      console.log(err);
       return res.status(500).json({ message: "Erro ao deletar o produto !" });
     }
   },

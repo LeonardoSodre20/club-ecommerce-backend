@@ -30,6 +30,12 @@ app.use(
   "/filesUser",
   express.static(path.join(__dirname, "..", "public", "avatar"))
 );
+
+app.use(
+  "/filesProduct",
+  express.static(path.join(__dirname, "..", "public", "productsImage"))
+);
+
 app.use("/product", routesProduct);
 app.use("/users", routesUser);
 app.use("/auth", routesAuth);

@@ -7,22 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  Admin
-  User
-}
-
-enum Status {
-  Ativo
-  Inativo
-}
-
 model Category {
   id         String    @id @unique @default(uuid())
   name       String    @unique
-  image      String?
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
+  image      String?
   products   Product[]
 
   @@map("categories")
@@ -31,14 +21,16 @@ model Category {
 model Product {
   id           String    @id @unique @default(uuid())
   name         String
-  quantity     Int
+  quantity     String
   status       String
   price        String
+  image        String
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
   categoryName String?
   category     Category? @relation(fields: [categoryName], references: [name], onDelete: Cascade)
 
+  @@index([categoryName], map: "products_categoryName_fkey")
   @@map("products")
 }
 
@@ -50,11 +42,21 @@ model User {
   password              String
   role                  Role?     @default(User)
   status                Status?   @default(Ativo)
-  avatar                String?
   password_token_reset  String?
   password_token_expiry DateTime?
   created_at            DateTime  @default(now())
   updated_at            DateTime  @updatedAt
+  avatar                String?
 
   @@map("users")
+}
+
+enum Role {
+  Admin
+  User
+}
+
+enum Status {
+  Ativo
+  Inativo
 }

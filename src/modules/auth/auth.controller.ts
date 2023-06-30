@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import jwt, { Secret, verify } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
@@ -171,7 +171,8 @@ export default {
         .json({ message: "Erro no encaminhamento do token !" });
     }
   },
-  async verifyTokenJWT(req: Request, res: Response) {
+
+  async verifyTokenJWT(req: Request, res: Response): Promise<void> {
     const { token } = req.params;
 
     try {
@@ -192,4 +193,5 @@ export default {
       console.log(err);
     }
   },
+
 };

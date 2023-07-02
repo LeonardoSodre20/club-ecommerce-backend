@@ -2,37 +2,23 @@ import { Response, Request } from "express";
 
 // PROVIDER
 import prismaClient from "@database";
-import dotenv from "dotenv";
-dotenv.config();
+
+// SERVICE
+import categoriesService from "./categories.service";
 
 export default {
-  async createCategory(req: Request, res: Response): Promise<Response> {
-    const { name } = req.body;
-    const image = req?.file?.filename as string;
-
-    const categoryAlredyExist = await prismaClient.category.findUnique({
-      where: {
-        name,
-      },
-    });
-
-    if (categoryAlredyExist) {
-      return res
-        .status(422)
-        .json({ message: "Já existe uma categoria com este nome !" });
-    }
-
+  async store(req: Request, res: Response): Promise<Response> {
     try {
-      const category = await prismaClient.category.create({
-        data: {
-          name,
-          image: `${process.env.APP_URL}:${process.env.PORT}/files/${image}`,
-        },
-      });
+      const data = req.body;
+
+      const newCategory = await categoriesService.store(
+        data,
+        req.file?.filename as string
+      );
 
       return res
         .status(200)
-        .json({ message: "Categoria criada com sucesso !", category });
+        .json({ message: "Categoria criada com sucesso !", newCategory });
     } catch (err) {
       return res.status(500).json({ message: "Erro ao criar a categoria !" });
     }

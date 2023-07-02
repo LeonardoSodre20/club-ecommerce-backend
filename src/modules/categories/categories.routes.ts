@@ -11,7 +11,7 @@ routesCategories.post(
   "/",
   multer(multerConfig).single("image"),
   (req: Request, res: Response) => {
-    categoriesController.createCategory(req, res);
+    categoriesController.store(req, res);
   }
 );
 

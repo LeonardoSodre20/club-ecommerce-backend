@@ -15,7 +15,7 @@ const routesProduct = Router();
 // ROUTES
 
 routesProduct.post(
-  "/",
+  "/product",
   // ensureAuthenticated,
   multer(multerConfigProduct).single("image"),
   (req: Request, res: Response) => {
@@ -23,16 +23,16 @@ routesProduct.post(
   }
 );
 
-routesProduct.get("/", ensureAuthenticated, (req: Request, res: Response) => {
+routesProduct.get("/product", (req: Request, res: Response) => {
   productsController.listProducts(req, res);
 });
 
-routesProduct.get("/:id", (req: Request, res: Response) => {
+routesProduct.get("/product/:id", (req: Request, res: Response) => {
   productsController.listProductById(req, res);
 });
 
 routesProduct.delete(
-  "/:id",
+  "/product/:id",
   ensureAuthenticated,
   (req: Request, res: Response) => {
     productsController.deleteProduct(req, res);
@@ -40,7 +40,7 @@ routesProduct.delete(
 );
 
 routesProduct.put(
-  "/:id",
+  "/product/:id",
   ensureAuthenticated,
   (req: Request, res: Response) => {
     productsController.updateProduct(req, res);

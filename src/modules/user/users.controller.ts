@@ -10,37 +10,18 @@ import prismaClient from "@database";
 import { IUserTypes } from "@interfaces/IUsers";
 import { User } from "@prisma/client";
 
+// SERVICE
+import usersService from "./users.service";
+
 export default {
-  async createUser(req: Request, res: Response): Promise<Response> {
-    const { name, lastname, email, password }: IUserTypes = req.body;
-
-    // CRIPTO PASS
-    const saltRounds = 10;
-    const salt = bcrypt.genSaltSync(saltRounds);
-    const cryptographedPassword = bcrypt.hashSync(password, salt);
-
-    // VERIFY USER EXIST
-    const userAlredyExist = await prismaClient.user.findUnique({
-      where: {
-        email,
-      },
-    });
-
-    if (userAlredyExist) {
-      return res.status(422).json({ message: "Este e-mail já está em uso !" });
-    }
-
-    const newUser = {
-      name,
-      lastname,
-      email,
-      password: cryptographedPassword,
-    };
+  async store(req: Request, res: Response): Promise<Response> {
+    const data = req.body;
 
     try {
-      const user = await prismaClient.user.create({
-        data: newUser,
-      });
+      const user = await usersService.store(
+        data,
+        req?.file?.filename as string
+      );
 
       return res
         .status(200)
@@ -49,37 +30,22 @@ export default {
       return res.status(500).json({ message: "Erro ao criar o usuário !" });
     }
   },
-  async listAndCountAllUsers(req: Request, res: Response): Promise<Response> {
+  async listAndCountAll(req: Request, res: Response) {
     try {
-      const users = await prismaClient.user.findMany();
-      const quantity = await prismaClient.user.count();
+      const users = await usersService.listAndCountAll();
 
       return res
         .status(200)
-        .json({ message: "Usuários listados com sucesso !", users, quantity });
+        .json({ message: "Usuários listados com sucesso !", users });
     } catch (err) {
       return res.status(500).json({ message: "Erro ao listar os usuários !" });
     }
   },
-  async updateUsers(req: Request, res: Response): Promise<Response> {
+  async updateById(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
-    const { name, lastname, email }: IUserTypes = req.body;
-    const avatar = req.file?.filename as string;
-
-    const updateUser = {
-      name,
-      lastname,
-      email,
-      avatar: `${process.env.APP_URL}:${process.env.PORT}/filesUser/${avatar}`,
-    };
-
+    const data = req.body;
     try {
-      const user = await prismaClient.user.update({
-        where: {
-          id: String(id),
-        },
-        data: updateUser,
-      });
+      const user = await usersService.updateById(id, data);
 
       return res
         .status(200)
@@ -90,14 +56,8 @@ export default {
   },
   async deleteUsers(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
-
     try {
-      await prismaClient.user.delete({
-        where: {
-          id: String(id),
-        },
-      });
-
+      await usersService.deleteById(id);
       return res
         .status(200)
         .json({ message: "Usuário deletado com sucesso !" });

@@ -23,7 +23,7 @@ routesProduct.post(
   }
 );
 
-routesProduct.get("/", (req: Request, res: Response) => {
+routesProduct.get("/", ensureAuthenticated, (req: Request, res: Response) => {
   productsController.listProducts(req, res);
 });
 

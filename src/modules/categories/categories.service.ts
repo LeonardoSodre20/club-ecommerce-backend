@@ -19,4 +19,36 @@ export default {
 
     return category;
   },
+  async listAll(): Promise<Category[]> {
+    const allCategories = await prismaClient.category.findMany({
+      include: {
+        products: true,
+      },
+    });
+
+    return allCategories;
+  },
+  async listById(id: Category["id"]) {
+    const category = await prismaClient.category.findUnique({
+      where: { id },
+      include: { products: true },
+    });
+
+    return category;
+  },
+  async listByName(name: Category["name"]) {
+    const category = await prismaClient.category.findUnique({
+      where: { name },
+      include: { products: true },
+    });
+
+    return category;
+  },
+  async deleteById(id: Category["id"]) {
+    const category = await prismaClient.category.delete({
+      where: { id },
+    });
+
+    return category;
+  },
 };

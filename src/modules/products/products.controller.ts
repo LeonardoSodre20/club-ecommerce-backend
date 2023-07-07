@@ -9,6 +9,9 @@ dotenv.config();
 import { Response, Request } from "express";
 import { IProductsTypes } from "@interfaces/IProducts";
 
+// SORT FUNCTIONS
+import { sortByText } from "@utils/sortFunctions";
+
 const PATH_IMAGE = `${process.env.APP_URL}:${process.env.PORT}/filesProduct`;
 
 export default {
@@ -42,7 +45,7 @@ export default {
     }
   },
   async listProducts(req: Request, res: Response): Promise<Response> {
-    const { pages, limit, search } = req.query;
+    const { pages, limit, search, order = "desc" } = req.query;
     try {
       const products = await prismaClient.product.findMany({
         skip: Number(pages) * Number(limit),
@@ -55,11 +58,14 @@ export default {
           id: "asc",
         },
       });
+
+      const sortedList = sortByText(products, (b) => b.name, order);
+
       const quantity = await prismaClient.product.count();
 
       return res.status(200).json({
         message: "Produtos listados com sucesso !",
-        products,
+        sortedList,
         quantity,
       });
     } catch (err) {

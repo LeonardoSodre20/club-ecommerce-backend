@@ -19,8 +19,4 @@ routesAuth.post("/reset", (req: Request, res: Response) => {
   authController.resetPassword(req, res);
 });
 
-routesAuth.post("/verifyToken/:token", (req: Request, res: Response) => {
-  authController.verifyTokenJWT(req, res);
-});
-
 export default routesAuth;

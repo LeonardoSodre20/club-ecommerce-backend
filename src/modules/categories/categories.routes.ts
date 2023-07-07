@@ -16,19 +16,19 @@ routesCategories.post(
 );
 
 routesCategories.get("/", (req: Request, res: Response) => {
-  categoriesController.listAllCategories(req, res);
+  categoriesController.listAll(req, res);
 });
 
 routesCategories.get("/:id", (req: Request, res: Response) => {
-  categoriesController.listCategoryByID(req, res);
+  categoriesController.listById(req, res);
 });
 
 routesCategories.get("/name/:name", (req: Request, res: Response) => {
-  categoriesController.listCategoryByName(req, res);
+  categoriesController.listByName(req, res);
 });
 
 routesCategories.delete("/:id", (req: Request, res: Response) => {
-  categoriesController.deleteCategoryByID(req, res);
+  categoriesController.deleteById(req, res);
 });
 
 export default routesCategories;

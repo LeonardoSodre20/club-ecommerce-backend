@@ -8,14 +8,14 @@ dotenv.config();
 // PROVIDDER
 import prismaClient from "@database";
 
-// CONFIG MAIL
+// CONFIGS
 import { sendEmail } from "@helpers/mail.controller";
+import authConfig from "@config/auth.config";
 
 // TYPES
 import { ILoginTypes } from "@interfaces/IAuth";
 import usersController from "@modules/user/users.controller";
-
-const secret_key: Secret = process.env.SECRET_KEY as string;
+import dayjs from "dayjs";
 
 export default {
   async login(req: Request, res: Response): Promise<Response> {
@@ -48,9 +48,11 @@ export default {
       return res.status(422).json({ message: "Credenciais Inválidas !" });
     }
 
+    const { secret_token, expires_in_token } = authConfig;
+
     try {
-      const token = jwt.sign({ id: checkUserExist.id }, secret_key, {
-        expiresIn: "1 days",
+      const token = jwt.sign({ id: checkUserExist.id }, secret_token, {
+        expiresIn: expires_in_token,
       });
 
       return res.status(200).json({
@@ -59,6 +61,7 @@ export default {
         token,
       });
     } catch (err) {
+      console.log(err);
       return res.status(500).json({ message: "Erro ao se autenticar !" });
     }
   },
@@ -171,27 +174,4 @@ export default {
         .json({ message: "Erro no encaminhamento do token !" });
     }
   },
-
-  async verifyTokenJWT(req: Request, res: Response): Promise<void> {
-    const { token } = req.params;
-
-    try {
-      const authToken = verify(token, secret_key, (err) => {
-        if (err) {
-          return res
-            .status(301)
-            .json({ auth: false, message: "Sessão expirada !" });
-        } else {
-          return res
-            .status(200)
-            .json({ auth: true, message: "Sessão restaurada !" });
-        }
-      });
-
-      return authToken;
-    } catch (err: any) {
-      console.log(err);
-    }
-  },
-
 };

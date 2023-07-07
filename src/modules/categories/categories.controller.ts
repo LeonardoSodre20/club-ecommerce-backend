@@ -7,7 +7,7 @@ import prismaClient from "@database";
 import categoriesService from "./categories.service";
 
 export default {
-  async store(req: Request, res: Response): Promise<Response> {
+  async store(req: Request, res: Response) {
     try {
       const data = req.body;
 
@@ -23,13 +23,9 @@ export default {
       return res.status(500).json({ message: "Erro ao criar a categoria !" });
     }
   },
-  async listAllCategories(req: Request, res: Response): Promise<Response> {
+  async listAll(req: Request, res: Response) {
     try {
-      const allCategories = await prismaClient.category.findMany({
-        include: {
-          products: true,
-        },
-      });
+      const allCategories = await categoriesService.listAll();
 
       return res
         .status(200)
@@ -40,18 +36,11 @@ export default {
         .json({ message: "Erro ao listar as categorias !" });
     }
   },
-  async listCategoryByID(req: Request, res: Response): Promise<Response> {
-    const { id } = req.params; // TIPO PROVISÓRIO
+  async listById(req: Request, res: Response) {
+    const { id } = req.params;
 
     try {
-      const category = await prismaClient.category.findUnique({
-        where: {
-          id: id,
-        },
-        include: {
-          products: true,
-        },
-      });
+      const category = await categoriesService.listById(id);
 
       return res
         .status(200)
@@ -60,18 +49,11 @@ export default {
       return res.status(500).json({ message: "Erro ao listar a categoria !" });
     }
   },
-  async listCategoryByName(req: Request, res: Response): Promise<Response> {
+  async listByName(req: Request, res: Response) {
     const { name } = req.params;
 
     try {
-      const category = await prismaClient.category.findUnique({
-        where: {
-          name,
-        },
-        include: {
-          products: true,
-        },
-      });
+      const category = await categoriesService.listByName(name);
 
       if (category === null) {
         return res
@@ -88,15 +70,11 @@ export default {
         .json({ message: "Erro ao listar a categoria pelo nome !" });
     }
   },
-  async deleteCategoryByID(req: Request, res: Response): Promise<Response> {
+  async deleteById(req: Request, res: Response) {
     const { id } = req.params;
 
     try {
-      const category = await prismaClient.category.delete({
-        where: {
-          id: id,
-        },
-      });
+      const category = await categoriesService.deleteById(id);
 
       return res
         .status(200)

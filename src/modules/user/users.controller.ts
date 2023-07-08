@@ -7,7 +7,6 @@ dotenv.config();
 import prismaClient from "@database";
 
 // TYPES
-import { IUserTypes } from "@interfaces/IUsers";
 import { User } from "@prisma/client";
 
 // SERVICE
@@ -64,56 +63,5 @@ export default {
     } catch (err) {
       return res.status(500).json({ message: "Erro ao deletar o usuário !" });
     }
-  },
-  async updateForgotPassword(
-    id: string,
-    data: Pick<User, "password_token_reset" | "password_token_expiry">
-  ): Promise<User | null> {
-    const user = await prismaClient.user.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    await prismaClient.user.update({
-      where: {
-        id,
-      },
-      data: data,
-    });
-
-    return user;
-  },
-  async updateUser(id: string, data: User): Promise<User | null> {
-    const user = await prismaClient.user.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (data.password) {
-      const saltRounds = 10;
-      const salt = bcrypt.genSaltSync(saltRounds);
-      const hashedPassword = bcrypt.hashSync(data.password, salt);
-
-      await prismaClient.user.update({
-        where: { id },
-        data: {
-          ...data,
-          password: hashedPassword,
-        },
-      });
-
-      return user;
-    }
-
-    await prismaClient.user.update({
-      where: { id },
-      data: {
-        ...data,
-      },
-    });
-
-    return user;
   },
 };

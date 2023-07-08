@@ -61,4 +61,39 @@ export default {
 
     return user;
   },
+  async updateDataResetPassword(
+    id: User["id"],
+    data: Pick<User, "password_token_reset" | "password_token_expiry">
+  ): Promise<User | null> {
+    const user = await prismaClient.user.findUnique({
+      where: { id },
+    });
+
+    await prismaClient.user.update({
+      where: { id },
+      data: data,
+    });
+
+    return user;
+  },
+  async updatePassword(
+    id: string,
+    data: Pick<User, "password">
+  ): Promise<User | null> {
+    const user = await prismaClient.user.findUnique({
+      where: { id },
+    });
+
+    if (data.password) {
+      const hashedPass = generateHashPassword(data.password);
+
+      await prismaClient.user.update({
+        where: { id },
+        data: {
+          password: hashedPass,
+        },
+      });
+    }
+    return user;
+  },
 };

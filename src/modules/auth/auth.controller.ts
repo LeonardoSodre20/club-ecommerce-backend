@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import jwt, { Secret, verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import * as dotenv from "dotenv";
@@ -14,8 +14,9 @@ import authConfig from "@config/auth.config";
 
 // TYPES
 import { ILoginTypes } from "@interfaces/IAuth";
-import usersController from "@modules/user/users.controller";
-import dayjs from "dayjs";
+
+// CONTROLLER
+import usersService from "@modules/user/users.service";
 
 export default {
   async login(req: Request, res: Response): Promise<Response> {
@@ -55,9 +56,29 @@ export default {
         expiresIn: expires_in_token,
       });
 
+      const {
+        id,
+        name,
+        lastname,
+        email,
+        role,
+        status,
+        created_at,
+        updated_at,
+        avatar,
+      } = checkUserExist;
+
       return res.status(200).json({
         message: "Autenticação realizada com sucesso !",
-        checkUserExist,
+        id,
+        name,
+        lastname,
+        email,
+        role,
+        status,
+        created_at,
+        updated_at,
+        avatar,
         token,
       });
     } catch (err) {
@@ -90,7 +111,7 @@ export default {
 
         now.setHours(now.getHours() + 1);
 
-        await usersController.updateForgotPassword(user.id, {
+        await usersService.updateDataResetPassword(user.id, {
           password_token_reset: passwordCodeReset,
           password_token_expiry: now,
         });
@@ -158,7 +179,7 @@ export default {
       });
 
       if (user?.id) {
-        await usersController.updateUser(user?.id, {
+        await usersService.updatePassword(user?.id, {
           ...user,
           password,
         });

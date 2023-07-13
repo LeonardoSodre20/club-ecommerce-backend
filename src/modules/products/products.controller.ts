@@ -2,39 +2,22 @@ import prismaClient from "@database";
 import dotenv from "dotenv";
 import fs from "fs/promises";
 import path from "path";
-
 dotenv.config();
 
 // TYPES
 import { Response, Request } from "express";
 import { IProductsTypes } from "@interfaces/IProducts";
 
-// SORT FUNCTIONS
-import { sortByText } from "@utils/sortFunctions";
-
-const PATH_IMAGE = `${process.env.APP_URL}:${process.env.PORT}/filesProduct`;
+// SERVICE
+import productsService from "./products.service";
 
 export default {
-  async createProduct(req: Request, res: Response): Promise<Response> {
-    const { name, quantity, status, price, categoryName }: IProductsTypes =
-      req.body;
+  async store(req: Request, res: Response): Promise<Response> {
+    const data = req.body;
     const image = req.file?.filename as string;
 
-    const newProduct = {
-      name,
-      quantity,
-      status,
-      price,
-      image: `${PATH_IMAGE}/${image}`,
-      categoryName,
-    };
-
     try {
-      const product = await prismaClient.product.create({
-        data: {
-          ...newProduct,
-        },
-      });
+      const product = await productsService.store(image, data);
 
       return res
         .status(200)
@@ -44,29 +27,20 @@ export default {
       return res.status(500).json({ message: "Erro ao criar o produto" });
     }
   },
-  async listProducts(req: Request, res: Response): Promise<Response> {
-    const { pages, limit, search, order = "desc" } = req.query;
+  async listAndCount(req: Request, res: Response): Promise<Response> {
     try {
-      const products = await prismaClient.product.findMany({
-        skip: Number(pages) * Number(limit),
-        where: {
-          name: {
-            contains: String(search),
-          },
-        },
-        orderBy: {
-          id: "asc",
-        },
-      });
+      const { pages, limit, search, order = "desc" } = req.query;
 
-      const sortedList = sortByText(products, (b) => b.name, order);
-
-      const quantity = await prismaClient.product.count();
+      const products = await productsService.listAndCount(
+        Number(pages),
+        Number(limit),
+        String(search),
+        order as "asc" | "desc"
+      );
 
       return res.status(200).json({
         message: "Produtos listados com sucesso !",
-        sortedList,
-        quantity,
+        products,
       });
     } catch (err) {
       return res.status(500).json({ message: "Erro ao listar os produtos" });

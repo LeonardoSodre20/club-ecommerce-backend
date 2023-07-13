@@ -19,12 +19,12 @@ routesProduct.post(
   // ensureAuthenticated,
   multer(multerConfigProduct).single("image"),
   (req: Request, res: Response) => {
-    productsController.createProduct(req, res);
+    productsController.store(req, res);
   }
 );
 
 routesProduct.get("/product", (req: Request, res: Response) => {
-  productsController.listProducts(req, res);
+  productsController.listAndCount(req, res);
 });
 
 routesProduct.get("/product/:id", (req: Request, res: Response) => {

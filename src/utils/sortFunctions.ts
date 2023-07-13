@@ -1,12 +1,22 @@
-export function sortByText<T>(data: T[], key: (a: T) => string, order: any) {
+function SortByText<T>(
+  data: T[],
+  key: (b: T) => string,
+  order: "asc" | "desc"
+) {
   return data.sort((a, b) => {
-    const textA = key(a);
-    const textB = key(b);
+    const txtA = key(a);
+    const txtB = key(b);
 
-    if (textA > textB && order === "asc") {
-      return 1;
-    } else {
-      return -1;
+    if (txtA > txtB) {
+      if (order === "desc") return 1;
     }
+
+    if (txtA < txtB) {
+      if (order === "asc") return -1;
+    }
+
+    return 0;
   });
 }
+
+export default { SortByText };

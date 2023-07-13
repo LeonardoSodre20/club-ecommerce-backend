@@ -35,20 +35,32 @@ model Product {
 }
 
 model User {
-  id                    String    @id @unique @default(uuid())
+  id                    String         @id @unique @default(uuid())
   name                  String
   lastname              String
-  email                 String    @unique
+  email                 String         @unique
   password              String
-  role                  Role?     @default(User)
-  status                Status?   @default(Ativo)
+  role                  Role?          @default(User)
+  status                Status?        @default(Ativo)
   password_token_reset  String?
   password_token_expiry DateTime?
-  created_at            DateTime  @default(now())
-  updated_at            DateTime  @updatedAt
+  created_at            DateTime       @default(now())
+  updated_at            DateTime       @updatedAt
   avatar                String?
+  refresh_token         Refresh_Token?
 
   @@map("users")
+}
+
+model Refresh_Token {
+  id            String   @id @default(uuid())
+  refresh_token String
+  expires_in    DateTime
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id])
+  created_at    DateTime @default(now())
+
+  @@map("refresh_token")
 }
 
 enum Role {

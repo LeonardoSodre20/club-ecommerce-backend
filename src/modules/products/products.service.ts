@@ -33,6 +33,7 @@ export default {
   ) {
     const productPromise = await prismaClient.product.findMany({
       skip: page * limit,
+      take: limit,
       where: {
         name: {
           contains: query,

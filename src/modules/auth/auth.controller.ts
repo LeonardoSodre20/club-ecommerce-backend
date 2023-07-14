@@ -15,7 +15,7 @@ import authConfig from "@config/auth.config";
 // TYPES
 import { ILoginTypes } from "@interfaces/IAuth";
 
-// CONTROLLER
+// SERVICE
 import usersService from "@modules/user/users.service";
 
 export default {

@@ -1,13 +1,6 @@
 import { Response, Request } from "express";
-import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 dotenv.config();
-
-// PROVIDER
-import prismaClient from "@database";
-
-// TYPES
-import { User } from "@prisma/client";
 
 // SERVICE
 import usersService from "./users.service";

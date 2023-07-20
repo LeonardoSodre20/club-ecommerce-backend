@@ -7,6 +7,9 @@ import fs from "fs";
 import { fonts } from "@pdfConfig/configs";
 import { TDocumentDefinitions } from "pdfmake/interfaces";
 
+// SERVICE
+import relatoryService from "./relatory.service";
+
 export default {
   async getRelatoryInformations(
     req: Request,
@@ -78,6 +81,15 @@ export default {
       return res
         .status(500)
         .json({ message: "Erro ao listar as informações do relatório !" });
+    }
+  },
+  async findAndAddByCategory(req: Request, res: Response) {
+    try {
+      const rows = await relatoryService.findAdnAddByCategory();
+
+      return res.status(200).json({ rows });
+    } catch (err: any) {
+      return res.status(500).json({ message: "Erro ao listar os produtos !" });
     }
   },
 };

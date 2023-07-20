@@ -1,8 +1,5 @@
 import { Response, Request } from "express";
 
-// PROVIDER
-import prismaClient from "@database";
-
 // SERVICE
 import categoriesService from "./categories.service";
 

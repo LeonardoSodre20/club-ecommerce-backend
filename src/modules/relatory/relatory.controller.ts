@@ -85,7 +85,7 @@ export default {
   },
   async findAndAddByCategory(req: Request, res: Response) {
     try {
-      const rows = await relatoryService.findAdnAddByCategory();
+      const rows = await relatoryService.findAndAddByCategory();
 
       return res.status(200).json({ rows });
     } catch (err: any) {

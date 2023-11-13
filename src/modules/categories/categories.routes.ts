@@ -1,4 +1,4 @@
-import multerConfig from "@config/multer.config";
+import { verifyTypeMulterConfig } from "@config/multer.config";
 import { Router, Request, Response } from "express";
 
 import categoriesController from "./categories.controller";
@@ -8,7 +8,7 @@ const routesCategories = Router();
 
 routesCategories.post(
   "/category",
-  multer(multerConfig).single("image"),
+  multer(verifyTypeMulterConfig('category')).single("image"),
   (req: Request, res: Response) => {
     categoriesController.store(req, res);
   }

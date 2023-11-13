@@ -2,7 +2,7 @@ import { Router, Response, Request } from "express";
 
 // UPLOAD
 import multer from "multer";
-import multerConfigProduct from "./products.multer";
+import { verifyTypeMulterConfig } from "@config/multer.config";
 
 // CONTROLLER
 import productsController from "./products.controller";
@@ -17,7 +17,7 @@ const routesProduct = Router();
 routesProduct.post(
   "/product",
   // ensureAuthenticated,
-  multer(multerConfigProduct).single("image"),
+  multer(verifyTypeMulterConfig('product')).single("image"),
   (req: Request, res: Response) => {
     productsController.store(req, res);
   }
@@ -46,5 +46,9 @@ routesProduct.put(
     productsController.updateProduct(req, res);
   }
 );
+
+routesProduct.post("/product/qrcode", (req: Request, res: Response) => {
+  productsController.generateQrCode(req, res);
+});
 
 export default routesProduct;

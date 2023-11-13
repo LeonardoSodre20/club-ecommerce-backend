@@ -29,7 +29,11 @@ export default {
     return newUser;
   },
   async listAndCountAll() {
-    const rowsPromise = prismaClient.user.findMany();
+    const rowsPromise = prismaClient.user.findMany({
+      where: {
+        role: "User",
+      },
+    });
     const countPromise = prismaClient.user.count();
 
     const [rows, count] = await Promise.all([rowsPromise, countPromise]);

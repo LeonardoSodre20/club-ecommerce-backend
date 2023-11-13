@@ -48,6 +48,7 @@ model User {
   updated_at            DateTime       @updatedAt
   avatar                String?
   refresh_token         Refresh_Token?
+  last_access_time      String?
 
   @@map("users")
 }

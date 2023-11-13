@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node-dev -r tsconfig-paths/register --respawn src/server.ts"
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/server.ts"
   },
   "prisma": {
     "seed": "ts-node-dev prisma/seed.ts"
@@ -31,6 +31,7 @@
     "nodemailer": "^6.9.1",
     "pdfmake": "^0.2.7",
     "prisma": "^4.11.0",
+    "qrcode-pix": "5.0.0",
     "ts-node-dev": "^2.0.0",
     "uuidv4": "^6.2.13"
   },

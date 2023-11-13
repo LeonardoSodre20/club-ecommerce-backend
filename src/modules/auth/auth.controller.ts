@@ -9,8 +9,8 @@ dotenv.config();
 import prismaClient from "@database";
 
 // CONFIGS
-import { sendEmail } from "@helpers/mail.controller";
 import authConfig from "@config/auth.config";
+import { sendEmail } from "@helpers/mail.controller";
 
 // TYPES
 import { ILoginTypes } from "@interfaces/IAuth";
@@ -20,7 +20,7 @@ import usersService from "@modules/user/users.service";
 
 export default {
   async login(req: Request, res: Response): Promise<Response> {
-    const { email, password }: ILoginTypes = req.body;
+    const { email, password, last_access_time }: ILoginTypes = req.body;
 
     const checkUserExist = await prismaClient.user.findUnique({
       where: {

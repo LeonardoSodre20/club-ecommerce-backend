@@ -8,12 +8,9 @@ dotenv.config();
 import routes from "@routes/routes";
 
 const port = process.env.PORT;
-const corsOptions: CorsOptions = {
-  origin: "http://localhost:5173",
-};
 
 const app = express();
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 

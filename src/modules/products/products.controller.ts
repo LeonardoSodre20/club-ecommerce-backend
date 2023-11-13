@@ -6,7 +6,7 @@ dotenv.config();
 
 // TYPES
 import { Response, Request } from "express";
-import { IProductsTypes } from "@interfaces/IProducts";
+import { IDataQrCode, IProductsTypes } from "@interfaces/IProducts";
 
 // SERVICE
 import productsService from "./products.service";
@@ -63,6 +63,7 @@ export default {
       return res.status(500).json({ message: "Erro ao listar o produto !" });
     }
   },
+
   async updateProduct(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
     const { name, quantity, status, price }: IProductsTypes = req.body;
@@ -89,6 +90,7 @@ export default {
       return res.status(500).json({ message: "Erro ao atualizar o produto !" });
     }
   },
+
   async deleteProduct(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
 
@@ -117,6 +119,27 @@ export default {
     } catch (err) {
       console.log(err);
       return res.status(500).json({ message: "Erro ao deletar o produto !" });
+    }
+  },
+
+  async generateQrCode(req: Request, res: Response) {
+    try {
+      const { name, key, city, value }: IDataQrCode = req.body;
+
+      const data = {
+        name,
+        key,
+        city,
+        value,
+      };
+
+      const response = await productsService.generateQrcodePix(data);
+
+      return res
+        .status(200)
+        .json({ message: "Qrcode gerado com sucesso !", response });
+    } catch (err) {
+      return res.status(500).json({ message: "Erro ao gerar o QRCODE !" });
     }
   },
 };
